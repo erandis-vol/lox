@@ -5,6 +5,11 @@ import std.stdio;
 enum Opcode : ubyte
 {
     constant,
+    negate,
+    add,
+    subtract,
+    multiply,
+    divide,
     return_,
 }
 
@@ -28,10 +33,21 @@ class Chunk
         m_lines ~= line;
     }
 
-    int addConstant(Value value)
+    ubyte getCode(ulong offset)
     {
+        return m_code[offset];
+    }
+
+    ubyte addConstant(Value value)
+    {
+        assert(m_constants.length < 255);
         m_constants ~= value;
-        return cast(int)m_constants.length - 1;
+        return cast(ubyte)(m_constants.length - 1L);
+    }
+
+    Value getConstant(ulong constant)
+    {
+        return m_constants[constant];
     }
 
     void disassemble(string name)
@@ -49,14 +65,22 @@ class Chunk
         else
             writef("%4d ", m_lines[offset]);
         auto instruction = cast(Opcode)m_code[offset];
-        switch (instruction)
+        final switch (instruction)
         {
             case Opcode.constant:
-                return constantInstruction("OPCODE", offset);
+                return constantInstruction("CONSTANT", offset);
+            case Opcode.negate:
+                return simpleInstruction("NEGATE", offset);
+            case Opcode.add:
+                return simpleInstruction("ADD", offset);
+            case Opcode.subtract:
+                return simpleInstruction("SUBTRACT", offset);
+            case Opcode.multiply:
+                return simpleInstruction("MULTIPLY", offset);
+            case Opcode.divide:
+                return simpleInstruction("DIVIDE", offset);
             case Opcode.return_:
                 return simpleInstruction("RETURN", offset);
-            default:
-                return offset + 1;
         }
     }
 
