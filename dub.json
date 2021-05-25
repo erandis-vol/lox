@@ -1,0 +1,9 @@
+{
+	"authors": [
+		"jackb"
+	],
+	"copyright": "Copyright © 2021, jackb",
+	"description": "A minimal D application.",
+	"license": "proprietary",
+	"name": "lox"
+}
